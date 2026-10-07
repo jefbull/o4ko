@@ -2,7 +2,7 @@
 const tg = window.Telegram?.WebApp;
 if (tg) {
     tg.expand();
-    tg.ready(); // Уведомляем Telegram, что приложение готово
+    tg.ready();
     if (tg.initDataUnsafe?.user) {
         const user = tg.initDataUnsafe.user;
         const nameElement = document.getElementById('user-name');
@@ -18,18 +18,83 @@ let dealerHand = [];
 let gameOver = true;
 let isDealing = false;
 
-let balance = 1000;
+let balance = 10000;
 let currentBet = 50;
+let activeBet = 50;
+let soundEnabled = true;
 
 const suits = ['♠', '♥', '♦', '♣'];
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
 
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(type) {
+    if (!soundEnabled) return;
+    try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'card') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(150, now + 0.1);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now);
+            osc.stop(now + 0.1);
+        } else if (type === 'chip') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+            osc.start(now);
+            osc.stop(now + 0.05);
+        } else if (type === 'win') {
+            [523.25, 659.25, 783.99].forEach((freq, idx) => {
+                const o = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                o.connect(g);
+                g.connect(audioCtx.destination);
+                o.frequency.setValueAtTime(freq, now + idx * 0.1);
+                g.gain.setValueAtTime(0.2, now + idx * 0.1);
+                g.gain.linearRampToValueAtTime(0.01, now + idx * 0.1 + 0.3);
+                o.start(now + idx * 0.1);
+                o.stop(now + idx * 0.1 + 0.3);
+            });
+        } else if (type === 'lose') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.linearRampToValueAtTime(100, now + 0.3);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+    } catch (e) {
+        console.log('Audio error:', e);
+    }
+}
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    const btn = document.getElementById('sound-toggle');
+    if (btn) btn.textContent = soundEnabled ? '🔊' : '🔇';
+}
+
 function selectBet(amount) {
-    if (isDealing || !gameOver) return; // Ставку можно менять только между раундами
+    if (isDealing || !gameOver) return;
     
     currentBet = amount;
+    playSound('chip');
+    
     const betEl = document.getElementById('current-bet');
-    if (betEl) betEl.textContent = currentBet;
+    if (betEl) betEl.textContent = currentBet.toLocaleString('ru-RU');
 
     document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
     const activeChip = document.querySelector(`.chip-${amount}`);
@@ -101,7 +166,7 @@ function updateUI() {
 
     document.getElementById('player-score').textContent = calculateScore(playerHand);
     document.getElementById('dealer-score').textContent = calculateScore(dealerHand);
-    document.getElementById('balance').textContent = balance;
+    document.getElementById('balance').textContent = balance.toLocaleString('ru-RU');
 }
 
 async function startGame() {
@@ -112,8 +177,8 @@ async function startGame() {
         return;
     }
 
-    // Списываем ставку
-    balance -= currentBet;
+    activeBet = currentBet;
+    balance -= activeBet;
     isDealing = true;
     gameOver = false;
 
@@ -123,24 +188,25 @@ async function startGame() {
 
     document.getElementById('status-message').textContent = 'Раздача карт...';
     document.getElementById('btn-hit').disabled = true;
+    document.getElementById('btn-double').disabled = true;
     document.getElementById('btn-stand').disabled = true;
 
     updateUI();
 
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    // 1-я карта игроку
     playerHand.push(deck.pop());
+    playSound('card');
     updateUI();
     await sleep(250);
 
-    // 1-я карта дилеру
     dealerHand.push(deck.pop());
+    playSound('card');
     updateUI();
     await sleep(250);
 
-    // 2-я карта игроку
     playerHand.push(deck.pop());
+    playSound('card');
     updateUI();
     await sleep(250);
 
@@ -155,16 +221,42 @@ async function startGame() {
         document.getElementById('status-message').textContent = 'Ваш ход!';
         document.getElementById('btn-hit').disabled = false;
         document.getElementById('btn-stand').disabled = false;
+        if (balance >= activeBet) {
+            document.getElementById('btn-double').disabled = false;
+        }
     }
 }
 
 function hit() {
     if (gameOver || isDealing) return;
+    
+    document.getElementById('btn-double').disabled = true;
+
     playerHand.push(deck.pop());
+    playSound('card');
     updateUI();
 
     if (calculateScore(playerHand) > 21) {
         endGame('Перебор! Вы проиграли.', 0);
+    }
+}
+
+async function doubleDown() {
+    if (gameOver || isDealing || balance < activeBet) return;
+
+    balance -= activeBet;
+    activeBet *= 2;
+    playSound('chip');
+    updateUI();
+
+    playerHand.push(deck.pop());
+    playSound('card');
+    updateUI();
+
+    if (calculateScore(playerHand) > 21) {
+        endGame('Перебор! Вы проиграли.', 0);
+    } else {
+        await stand();
     }
 }
 
@@ -173,6 +265,7 @@ async function stand() {
     isDealing = true;
 
     document.getElementById('btn-hit').disabled = true;
+    document.getElementById('btn-double').disabled = true;
     document.getElementById('btn-stand').disabled = true;
     document.getElementById('status-message').textContent = 'Дилер берет карты...';
 
@@ -180,6 +273,7 @@ async function stand() {
 
     while (calculateScore(dealerHand) < 17) {
         dealerHand.push(deck.pop());
+        playSound('card');
         updateUI();
         await sleep(300);
     }
@@ -201,22 +295,28 @@ async function stand() {
 function endGame(message, multiplier) {
     gameOver = true;
     
-    // Выплата выигрыша
     if (multiplier > 0) {
-        balance += Math.floor(currentBet * multiplier);
+        balance += Math.floor(activeBet * multiplier);
+        playSound('win');
+    } else {
+        playSound('lose');
     }
 
-    document.getElementById('balance').textContent = balance;
+    document.getElementById('balance').textContent = balance.toLocaleString('ru-RU');
     document.getElementById('status-message').textContent = message;
     document.getElementById('btn-hit').disabled = true;
+    document.getElementById('btn-double').disabled = true;
     document.getElementById('btn-stand').disabled = true;
 
-    // Если закончились фишки — даем бесплатные
     if (balance <= 0) {
         setTimeout(() => {
-            balance = 500;
-            document.getElementById('balance').textContent = balance;
-            document.getElementById('status-message').textContent = 'Фишки закончились! Вам начислено 500 🪙';
+            balance = 5000;
+            document.getElementById('balance').textContent = balance.toLocaleString('ru-RU');
+            document.getElementById('status-message').textContent = 'Фишки закончились! Начислено 5 000 🪙';
         }, 1500);
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('balance').textContent = balance.toLocaleString('ru-RU');
+});
