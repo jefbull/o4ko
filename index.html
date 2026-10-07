@@ -9,12 +9,21 @@
 </head>
 <body>
     <div id="game-container">
+        <!-- Шапка с именем и балансом -->
         <div class="user-profile">
             <span id="user-name" class="user-name">Игрок</span>
+            <div class="balance-badge">🪙 <span id="balance">1000</span></div>
         </div>
 
         <h1>♠️ Игра 21 ♥️</h1>
         
+        <!-- Колода карт на столе -->
+        <div class="deck-container">
+            <div class="deck-card deck-3"></div>
+            <div class="deck-card deck-2"></div>
+            <div class="deck-card deck-1">🂠</div>
+        </div>
+
         <div class="hand">
             <h2>Дилер: <span id="dealer-score">0</span></h2>
             <div id="dealer-cards" class="cards-row"></div>
@@ -25,7 +34,18 @@
             <div id="player-cards" class="cards-row"></div>
         </div>
 
-        <div id="status-message">Нажмите «Новая игра», чтобы начать!</div>
+        <!-- Выбор ставки фишками -->
+        <div class="chips-container" id="chips-area">
+            <div class="chips-title">Ставка: <span id="current-bet">50</span> 🪙</div>
+            <div class="chips-row">
+                <button class="chip chip-10" onclick="selectBet(10)">10</button>
+                <button class="chip chip-50 active" onclick="selectBet(50)">50</button>
+                <button class="chip chip-100" onclick="selectBet(100)">100</button>
+                <button class="chip chip-250" onclick="selectBet(250)">250</button>
+            </div>
+        </div>
+
+        <div id="status-message">Сделайте ставку и нажмите «Новая игра»!</div>
 
         <div class="controls">
             <button id="btn-start" onclick="startGame()">Новая игра</button>
