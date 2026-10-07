@@ -1,22 +1,17 @@
-// Безопасное подключение Telegram WebApp
-const tg = window.Telegram?.WebApp;
-if (tg && typeof tg.expand === 'function') {
-    tg.expand();
-}
-
-const suits = ['♠', '♥', '♦', '♣'];
-const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
-
+// Простая и надежная логика игры в 21
 let deck = [];
 let playerHand = [];
 let dealerHand = [];
 let gameOver = false;
 
+const suits = ['♠', '♥', '♦', '♣'];
+const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
+
 function createDeck() {
     deck = [];
     for (let suit of suits) {
         for (let val of values) {
-            deck.push({ suit, value: val });
+            deck.push({ suit: suit, value: val });
         }
     }
     deck.sort(() => Math.random() - 0.5);
@@ -49,13 +44,31 @@ function renderHand(hand, elementId) {
     const container = document.getElementById(elementId);
     if (!container) return;
     container.innerHTML = '';
+    
     hand.forEach(card => {
         const div = document.createElement('div');
         const isRed = card.suit === '♥' || card.suit === '♦';
-        div.className = `card ${isRed ? 'red' : ''}`;
-        div.textContent = `${card.value}${card.suit}`;
+        div.className = 'card' + (isRed ? ' red' : '');
+        div.textContent = card.value + card.suit;
         container.appendChild(div);
     });
+}
+
+function updateUI() {
+    renderHand(playerHand, 'player-cards');
+    renderHand(dealerHand, 'dealer-cards');
+
+    const pScore = calculateScore(playerHand);
+    const dScore = calculateScore(dealerHand);
+
+    document.getElementById('player-score').textContent = pScore;
+    document.getElementById('dealer-score').textContent = dScore;
+
+    if (pScore > 21) {
+        endGame('Перебор! Вы проиграли.');
+    } else if (pScore === 21 && playerHand.length === 2) {
+        endGame('Блэкджек! Вы выиграли!');
+    }
 }
 
 function startGame() {
@@ -69,21 +82,6 @@ function startGame() {
     document.getElementById('btn-stand').disabled = false;
 
     updateUI();
-}
-
-function updateUI() {
-    renderHand(playerHand, 'player-cards');
-    renderHand(dealerHand, 'dealer-cards');
-
-    const pScore = calculateScore(playerHand);
-    document.getElementById('player-score').textContent = pScore;
-    document.getElementById('dealer-score').textContent = calculateScore(dealerHand);
-
-    if (pScore > 21) {
-        endGame('Перебор! Вы проиграли.');
-    } else if (pScore === 21 && playerHand.length === 2) {
-        endGame('Блэкджек! Вы выиграли!');
-    }
 }
 
 function hit() {
