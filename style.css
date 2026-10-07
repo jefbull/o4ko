@@ -206,8 +206,8 @@ h1 {
 }
 
 .chip {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     border: 2px dashed #ffffff;
     font-weight: bold;
@@ -231,7 +231,6 @@ h1 {
 }
 
 /* Цвета фишек */
-.chip-10    { background: #0077b6; }
 .chip-50    { background: #2b9348; }
 .chip-100   { background: #d62828; }
 .chip-250   { background: #6a040f; }
