@@ -15,6 +15,7 @@ let deck = [];
 let playerHand = [];
 let dealerHand = [];
 let gameOver = false;
+let isDealing = false;
 
 const suits = ['♠', '♥', '♦', '♣'];
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
@@ -61,7 +62,19 @@ function renderHand(hand, elementId) {
         const div = document.createElement('div');
         const isRed = card.suit === '♥' || card.suit === '♦';
         div.className = 'card' + (isRed ? ' red' : '');
-        div.textContent = card.value + card.suit;
+        
+        div.innerHTML = `
+            <div class="card-corner top-left">
+                <span class="card-value">${card.value}</span>
+                <span class="card-suit-small">${card.suit}</span>
+            </div>
+            <div class="card-center-suit">${card.suit}</div>
+            <div class="card-corner bottom-right">
+                <span class="card-value">${card.value}</span>
+                <span class="card-suit-small">${card.suit}</span>
+            </div>
+        `;
+        
         container.appendChild(div);
     });
 }
@@ -83,37 +96,74 @@ function updateUI() {
     }
 }
 
-function startGame() {
+// Поочередная анимация раздачи карт при старте
+async function startGame() {
+    if (isDealing) return;
+    isDealing = true;
+
     createDeck();
-    playerHand = [deck.pop(), deck.pop()];
-    dealerHand = [deck.pop()];
+    playerHand = [];
+    dealerHand = [];
     gameOver = false;
 
-    document.getElementById('status-message').textContent = 'Ваш ход!';
-    document.getElementById('btn-hit').disabled = false;
-    document.getElementById('btn-stand').disabled = false;
+    document.getElementById('status-message').textContent = 'Раздача карт...';
+    document.getElementById('btn-hit').disabled = true;
+    document.getElementById('btn-stand').disabled = true;
 
     updateUI();
+
+    // Задержка между раздачами карт
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    // 1-я карта игроку
+    playerHand.push(deck.pop());
+    updateUI();
+    await sleep(250);
+
+    // 1-я карта дилеру
+    dealerHand.push(deck.pop());
+    updateUI();
+    await sleep(250);
+
+    // 2-я карта игроку
+    playerHand.push(deck.pop());
+    updateUI();
+    await sleep(250);
+
+    isDealing = false;
+    document.getElementById('status-message').textContent = 'Ваш ход!';
+
+    const pScore = calculateScore(playerHand);
+    if (pScore <= 21) {
+        document.getElementById('btn-hit').disabled = false;
+        document.getElementById('btn-stand').disabled = false;
+    }
 }
 
 function hit() {
-    if (gameOver) return;
+    if (gameOver || isDealing) return;
     playerHand.push(deck.pop());
     updateUI();
 }
 
-function stand() {
-    if (gameOver) return;
+async function stand() {
+    if (gameOver || isDealing) return;
+    isDealing = true;
+
+    document.getElementById('btn-hit').disabled = true;
+    document.getElementById('btn-stand').disabled = true;
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     while (calculateScore(dealerHand) < 17) {
         dealerHand.push(deck.pop());
+        renderHand(dealerHand, 'dealer-cards');
+        document.getElementById('dealer-score').textContent = calculateScore(dealerHand);
+        await sleep(300);
     }
 
     const pScore = calculateScore(playerHand);
     const dScore = calculateScore(dealerHand);
-
-    renderHand(dealerHand, 'dealer-cards');
-    document.getElementById('dealer-score').textContent = dScore;
 
     if (dScore > 21 || pScore > dScore) {
         endGame('Вы выиграли!');
@@ -122,6 +172,8 @@ function stand() {
     } else {
         endGame('Ничья!');
     }
+
+    isDealing = false;
 }
 
 function endGame(message) {
