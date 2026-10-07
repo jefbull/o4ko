@@ -1,4 +1,16 @@
-// Простая и надежная логика игры в 21
+// Инициализация Telegram WebApp
+const tg = window.Telegram?.WebApp;
+if (tg) {
+    tg.expand();
+    if (tg.initDataUnsafe?.user) {
+        const user = tg.initDataUnsafe.user;
+        const nameElement = document.getElementById('user-name');
+        if (nameElement) {
+            nameElement.textContent = `👤 ${user.first_name} ${user.last_name || ''}`.trim();
+        }
+    }
+}
+
 let deck = [];
 let playerHand = [];
 let dealerHand = [];
