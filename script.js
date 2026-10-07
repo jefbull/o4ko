@@ -18,7 +18,8 @@ let dealerHand = [];
 let gameOver = true;
 let isDealing = false;
 
-let balance = 10000;
+// Считываем сохраненный баланс из браузера (если его нет — даем 10 000 по умолчанию)
+let balance = parseInt(localStorage.getItem('o4ko_balance')) || 10000;
 let currentBet = 50;
 let activeBet = 50;
 let soundEnabled = true;
@@ -27,6 +28,10 @@ const suits = ['♠', '♥', '♦', '♣'];
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function saveBalance() {
+    localStorage.setItem('o4ko_balance', balance);
+}
 
 function playSound(type) {
     if (!soundEnabled) return;
@@ -179,6 +184,8 @@ async function startGame() {
 
     activeBet = currentBet;
     balance -= activeBet;
+    saveBalance(); // Сохраняем списанную ставку
+
     isDealing = true;
     gameOver = false;
 
@@ -246,6 +253,7 @@ async function doubleDown() {
 
     balance -= activeBet;
     activeBet *= 2;
+    saveBalance(); // Сохраняем удвоение
     playSound('chip');
     updateUI();
 
@@ -302,6 +310,8 @@ function endGame(message, multiplier) {
         playSound('lose');
     }
 
+    saveBalance(); // Сохраняем итоговый баланс раунда
+
     document.getElementById('balance').textContent = balance.toLocaleString('ru-RU');
     document.getElementById('status-message').textContent = message;
     document.getElementById('btn-hit').disabled = true;
@@ -311,6 +321,7 @@ function endGame(message, multiplier) {
     if (balance <= 0) {
         setTimeout(() => {
             balance = 5000;
+            saveBalance();
             document.getElementById('balance').textContent = balance.toLocaleString('ru-RU');
             document.getElementById('status-message').textContent = 'Фишки закончились! Начислено 5 000 🪙';
         }, 1500);
