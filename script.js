@@ -17,8 +17,21 @@ let dealerHand = [];
 let gameOver = false;
 let isDealing = false;
 
+let balance = 1000;
+let currentBet = 50;
+
 const suits = ['♠', '♥', '♦', '♣'];
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
+
+function selectBet(amount) {
+    if (isDealing || (!gameOver && playerHand.length > 0)) return; // Нельзя менять ставку во время игры
+    
+    currentBet = amount;
+    document.getElementById('current-bet').textContent = currentBet;
+
+    document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
+    document.querySelector(`.chip-${amount}`).classList.add('active');
+}
 
 function createDeck() {
     deck = [];
@@ -83,22 +96,21 @@ function updateUI() {
     renderHand(playerHand, 'player-cards');
     renderHand(dealerHand, 'dealer-cards');
 
-    const pScore = calculateScore(playerHand);
-    const dScore = calculateScore(dealerHand);
-
-    document.getElementById('player-score').textContent = pScore;
-    document.getElementById('dealer-score').textContent = dScore;
-
-    if (pScore > 21) {
-        endGame('Перебор! Вы проиграли.');
-    } else if (pScore === 21 && playerHand.length === 2) {
-        endGame('Блэкджек! Вы выиграли!');
-    }
+    document.getElementById('player-score').textContent = calculateScore(playerHand);
+    document.getElementById('dealer-score').textContent = calculateScore(dealerHand);
+    document.getElementById('balance').textContent = balance;
 }
 
-// Поочередная анимация раздачи карт при старте
 async function startGame() {
     if (isDealing) return;
+
+    if (balance < currentBet) {
+        document.getElementById('status-message').textContent = 'Недостаточно фишек для этой ставки!';
+        return;
+    }
+
+    // Списываем ставку
+    balance -= currentBet;
     isDealing = true;
 
     createDeck();
@@ -112,7 +124,6 @@ async function startGame() {
 
     updateUI();
 
-    // Задержка между раздачами карт
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     // 1-я карта игроку
@@ -134,7 +145,11 @@ async function startGame() {
     document.getElementById('status-message').textContent = 'Ваш ход!';
 
     const pScore = calculateScore(playerHand);
-    if (pScore <= 21) {
+    if (pScore === 21 && playerHand.length === 2) {
+        endGame('Блэкджек! Вы выиграли x2.5!', 2.5);
+    } else if (pScore > 21) {
+        endGame('Перебор! Вы проиграли.', 0);
+    } else {
         document.getElementById('btn-hit').disabled = false;
         document.getElementById('btn-stand').disabled = false;
     }
@@ -144,6 +159,10 @@ function hit() {
     if (gameOver || isDealing) return;
     playerHand.push(deck.pop());
     updateUI();
+
+    if (calculateScore(playerHand) > 21) {
+        endGame('Перебор! Вы проиграли.', 0);
+    }
 }
 
 async function stand() {
@@ -152,33 +171,48 @@ async function stand() {
 
     document.getElementById('btn-hit').disabled = true;
     document.getElementById('btn-stand').disabled = true;
+    document.getElementById('status-message').textContent = 'Дилер берет карты...';
 
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     while (calculateScore(dealerHand) < 17) {
         dealerHand.push(deck.pop());
-        renderHand(dealerHand, 'dealer-cards');
-        document.getElementById('dealer-score').textContent = calculateScore(dealerHand);
+        updateUI();
         await sleep(300);
     }
 
     const pScore = calculateScore(playerHand);
     const dScore = calculateScore(dealerHand);
 
-    if (dScore > 21 || pScore > dScore) {
-        endGame('Вы выиграли!');
-    } else if (dScore > pScore) {
-        endGame('Дилер выиграл.');
-    } else {
-        endGame('Ничья!');
-    }
-
     isDealing = false;
+
+    if (dScore > 21 || pScore > dScore) {
+        endGame('Вы выиграли x2!', 2);
+    } else if (dScore > pScore) {
+        endGame('Дилер выиграл.', 0);
+    } else {
+        endGame('Ничья! Ставка возвращена.', 1);
+    }
 }
 
-function endGame(message) {
+function endGame(message, multiplier) {
     gameOver = true;
+    
+    // Выплата выигрыша
+    if (multiplier > 0) {
+        balance += Math.floor(currentBet * multiplier);
+    }
+
+    document.getElementById('balance').textContent = balance;
     document.getElementById('status-message').textContent = message;
     document.getElementById('btn-hit').disabled = true;
     document.getElementById('btn-stand').disabled = true;
-}
+
+    // Если закончились фишки — даем бесплатные
+    if (balance <= 0) {
+        setTimeout(() => {
+            balance = 500;
+            document.getElementById('balance').textContent = balance;
+            document.getElementById('status-message').textContent = 'Фишки закончились! Вам начислено 500 🪙';
+        }, 1500);
+    }
