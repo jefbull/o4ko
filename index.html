@@ -9,10 +9,13 @@
 </head>
 <body>
     <div id="game-container">
-        <!-- Шапка с именем и балансом -->
+        <!-- Шапка с профилем и переключателем звука -->
         <div class="user-profile">
             <span id="user-name" class="user-name">Игрок</span>
-            <div class="balance-badge">🪙 <span id="balance">1000</span></div>
+            <div class="top-right-panel">
+                <button id="sound-toggle" onclick="toggleSound()">🔊</button>
+                <div class="balance-badge">🪙 <span id="balance">10000</span></div>
+            </div>
         </div>
 
         <h1>♠️ Игра 21 ♥️</h1>
@@ -37,19 +40,27 @@
         <!-- Выбор ставки фишками -->
         <div class="chips-container" id="chips-area">
             <div class="chips-title">Ставка: <span id="current-bet">50</span> 🪙</div>
-            <div class="chips-row">
+            <div class="chips-grid">
                 <button class="chip chip-10" onclick="selectBet(10)">10</button>
                 <button class="chip chip-50 active" onclick="selectBet(50)">50</button>
                 <button class="chip chip-100" onclick="selectBet(100)">100</button>
                 <button class="chip chip-250" onclick="selectBet(250)">250</button>
+                <button class="chip chip-500" onclick="selectBet(500)">500</button>
+                <button class="chip chip-1000" onclick="selectBet(1000)">1k</button>
+                <button class="chip chip-2500" onclick="selectBet(2500)">2.5k</button>
+                <button class="chip chip-5000" onclick="selectBet(5000)">5k</button>
+                <button class="chip chip-10000" onclick="selectBet(10000)">10k</button>
+                <button class="chip chip-25000" onclick="selectBet(25000)">25k</button>
             </div>
         </div>
 
         <div id="status-message">Сделайте ставку и нажмите «Новая игра»!</div>
 
+        <!-- Кнопки действий -->
         <div class="controls">
             <button id="btn-start" onclick="startGame()">Новая игра</button>
             <button id="btn-hit" onclick="hit()" disabled>Еще</button>
+            <button id="btn-double" onclick="doubleDown()" disabled>Удвоить x2</button>
             <button id="btn-stand" onclick="stand()" disabled>Пас</button>
         </div>
     </div>
