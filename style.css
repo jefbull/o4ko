@@ -1,3 +1,4 @@
+CSS
 * {
     box-sizing: border-box;
     user-select: none;
@@ -30,20 +31,30 @@ body {
 .user-profile {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+    justify-content: space-between;
     margin-bottom: 8px;
+    padding: 0 4px;
 }
 
 .user-name {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 15px;
+    color: #ffffff;
+}
+
+.balance-badge {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #fca311;
     color: #fca311;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 h1 {
-    font-size: 22px;
-    margin: 0 0 12px 0;
+    font-size: 20px;
+    margin: 0 0 10px 0;
     color: #ffffff;
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
@@ -51,15 +62,15 @@ h1 {
 /* Колода карт на столе */
 .deck-container {
     position: relative;
-    width: 55px;
-    height: 78px;
-    margin: 0 auto 14px auto;
+    width: 50px;
+    height: 70px;
+    margin: 0 auto 10px auto;
 }
 
 .deck-card {
     position: absolute;
-    width: 52px;
-    height: 75px;
+    width: 48px;
+    height: 68px;
     border-radius: 6px;
     background: repeating-linear-gradient(
         45deg,
@@ -81,20 +92,20 @@ h1 {
     align-items: center; 
     justify-content: center; 
     color: rgba(255, 255, 255, 0.4); 
-    font-size: 28px; 
+    font-size: 24px; 
 }
 
 .hand {
     background: rgba(255, 255, 255, 0.07);
-    border-radius: 14px;
-    padding: 10px;
-    margin-bottom: 12px;
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hand h2 {
-    font-size: 15px;
-    margin: 0 0 8px 0;
+    font-size: 14px;
+    margin: 0 0 6px 0;
     color: #e0e0e0;
 }
 
@@ -102,34 +113,32 @@ h1 {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 8px;
-    min-height: 80px;
+    gap: 6px;
+    min-height: 74px;
     align-items: center;
 }
 
-/* Реалистичные карты с анимацией вылета из колоды */
+/* Реалистичные карты */
 .card {
     position: relative;
     background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
     color: #111111;
-    width: 54px;
-    height: 78px;
+    width: 50px;
+    height: 72px;
     border-radius: 6px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 0 2px rgba(0,0,0,0.2);
-    padding: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    padding: 3px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     font-family: Arial, sans-serif;
     animation: flyIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    transform-origin: center;
 }
 
 .card.red {
     color: #d62828;
 }
 
-/* Анимация вылета карты */
 @keyframes flyIn {
     0% {
         opacity: 0;
@@ -148,35 +157,76 @@ h1 {
     line-height: 0.9;
 }
 
-.card-corner.top-left {
-    align-self: flex-start;
+.card-corner.top-left { align-self: flex-start; }
+.card-corner.bottom-right { 
+    align-self: flex-end; 
+    transform: rotate(180deg); 
 }
 
-.card-corner.bottom-right {
-    align-self: flex-end;
-    transform: rotate(180deg);
+.card-value { font-size: 12px; font-weight: bold; }
+.card-suit-small { font-size: 10px; }
+.card-center-suit { font-size: 18px; text-align: center; line-height: 1; }
+
+/* Фишки казино */
+.chips-container {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 10px;
 }
 
-.card-value {
+.chips-title {
     font-size: 13px;
+    margin-bottom: 6px;
+    color: #d0d0d0;
+}
+
+.chips-title span {
     font-weight: bold;
+    color: #fca311;
 }
 
-.card-suit-small {
-    font-size: 11px;
+.chips-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
-.card-center-suit {
-    font-size: 20px;
-    text-align: center;
-    line-height: 1;
+.chip {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px dashed #ffffff;
+    font-weight: bold;
+    font-size: 13px;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, border-color 0.15s;
+    padding: 0;
 }
+
+.chip:active { transform: scale(0.9); }
+.chip.active {
+    transform: scale(1.15);
+    border-style: solid;
+    border-color: #ffd700;
+    box-shadow: 0 0 12px #ffd700;
+}
+
+.chip-10  { background: #0077b6; }
+.chip-50  { background: #2b9348; }
+.chip-100 { background: #d62828; }
+.chip-250 { background: #6a040f; }
 
 #status-message {
     font-weight: bold;
-    margin: 12px 0;
-    font-size: 15px;
-    min-height: 22px;
+    margin: 10px 0;
+    font-size: 14px;
+    min-height: 20px;
     color: #fca311;
 }
 
@@ -188,7 +238,7 @@ h1 {
 button {
     flex: 1;
     padding: 12px 6px;
-    font-size: 15px;
+    font-size: 14px;
     border: none;
     border-radius: 10px;
     background: #2b9348;
@@ -199,16 +249,11 @@ button {
     transition: background 0.2s, transform 0.1s;
 }
 
-button:active {
-    transform: scale(0.97);
-}
-
+button:active { transform: scale(0.97); }
 button:disabled {
     background: #555555;
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-#btn-start {
-    background: #0077b6;
-}
+#btn-start { background: #0077b6; }
