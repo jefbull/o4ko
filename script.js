@@ -1,5 +1,8 @@
-const tg = window.Telegram.WebApp;
-tg.expand();
+// Безопасное подключение Telegram WebApp
+const tg = window.Telegram?.WebApp;
+if (tg && typeof tg.expand === 'function') {
+    tg.expand();
+}
 
 const suits = ['♠', '♥', '♦', '♣'];
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
@@ -44,6 +47,7 @@ function calculateScore(hand) {
 
 function renderHand(hand, elementId) {
     const container = document.getElementById(elementId);
+    if (!container) return;
     container.innerHTML = '';
     hand.forEach(card => {
         const div = document.createElement('div');
@@ -115,3 +119,4 @@ function endGame(message) {
     document.getElementById('status-message').textContent = message;
     document.getElementById('btn-hit').disabled = true;
     document.getElementById('btn-stand').disabled = true;
+}
