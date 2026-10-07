@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Игра 21</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <h1>♠️ Игра 21 ♥️</h1>
+        
+        <div class="hand">
+            <h2>Дилер: <span id="dealer-score">0</span></h2>
+            <div id="dealer-cards" class="cards-row"></div>
+        </div>
+
+        <div class="hand">
+            <h2>Вы: <span id="player-score">0</span></h2>
+            <div id="player-cards" class="cards-row"></div>
+        </div>
+
+        <div id="status-message">Нажмите «Старт», чтобы начать!</div>
+
+        <div class="controls">
+            <button id="btn-start" onclick="startGame()">Новая игра</button>
+            <button id="btn-hit" onclick="hit()" disabled>Еще</button>
+            <button id="btn-stand" onclick="stand()" disabled>Пас</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
