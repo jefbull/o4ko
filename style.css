@@ -18,11 +18,11 @@ body {
 #game-container {
     width: 100%;
     max-width: 420px;
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0.4);
     border: 2px solid #2d6a4f;
     border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     text-align: center;
     backdrop-filter: blur(5px);
 }
@@ -32,14 +32,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-bottom: 12px;
-}
-
-.user-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 2px solid #fca311;
+    margin-bottom: 8px;
 }
 
 .user-name {
@@ -49,22 +42,58 @@ body {
 }
 
 h1 {
-    font-size: 24px;
-    margin: 0 0 16px 0;
+    font-size: 22px;
+    margin: 0 0 12px 0;
     color: #ffffff;
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
+/* Колода карт на столе */
+.deck-container {
+    position: relative;
+    width: 55px;
+    height: 78px;
+    margin: 0 auto 14px auto;
+}
+
+.deck-card {
+    position: absolute;
+    width: 52px;
+    height: 75px;
+    border-radius: 6px;
+    background: repeating-linear-gradient(
+        45deg,
+        #b71c1c,
+        #b71c1c 4px,
+        #d32f2f 4px,
+        #d32f2f 8px
+    );
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.deck-3 { top: 4px; left: 4px; }
+.deck-2 { top: 2px; left: 2px; }
+.deck-1 { 
+    top: 0; 
+    left: 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: rgba(255, 255, 255, 0.4); 
+    font-size: 28px; 
+}
+
 .hand {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.07);
     border-radius: 14px;
-    padding: 12px;
-    margin-bottom: 14px;
+    padding: 10px;
+    margin-bottom: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hand h2 {
-    font-size: 16px;
+    font-size: 15px;
     margin: 0 0 8px 0;
     color: #e0e0e0;
 }
@@ -74,39 +103,80 @@ h1 {
     justify-content: center;
     flex-wrap: wrap;
     gap: 8px;
-    min-height: 70px;
+    min-height: 80px;
     align-items: center;
 }
 
+/* Реалистичные карты с анимацией вылета из колоды */
 .card {
-    background: #ffffff;
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
     color: #111111;
-    width: 48px;
-    height: 68px;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 18px;
+    width: 54px;
+    height: 78px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 0 2px rgba(0,0,0,0.2);
+    padding: 4px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-    animation: popIn 0.2s ease-out;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: Arial, sans-serif;
+    animation: flyIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transform-origin: center;
 }
 
 .card.red {
     color: #d62828;
 }
 
-@keyframes popIn {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+/* Анимация вылета карты */
+@keyframes flyIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-80px) scale(0.3) rotate(-15deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+}
+
+.card-corner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 0.9;
+}
+
+.card-corner.top-left {
+    align-self: flex-start;
+}
+
+.card-corner.bottom-right {
+    align-self: flex-end;
+    transform: rotate(180deg);
+}
+
+.card-value {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.card-suit-small {
+    font-size: 11px;
+}
+
+.card-center-suit {
+    font-size: 20px;
+    text-align: center;
+    line-height: 1;
 }
 
 #status-message {
     font-weight: bold;
-    margin: 16px 0;
-    font-size: 16px;
-    min-height: 24px;
+    margin: 12px 0;
+    font-size: 15px;
+    min-height: 22px;
     color: #fca311;
 }
 
@@ -117,7 +187,7 @@ h1 {
 
 button {
     flex: 1;
-    padding: 12px 8px;
+    padding: 12px 6px;
     font-size: 15px;
     border: none;
     border-radius: 10px;
@@ -125,7 +195,7 @@ button {
     color: #ffffff;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     transition: background 0.2s, transform 0.1s;
 }
 
