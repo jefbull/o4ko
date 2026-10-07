@@ -2,6 +2,7 @@
 const tg = window.Telegram?.WebApp;
 if (tg) {
     tg.expand();
+    tg.ready(); // Уведомляем Telegram, что приложение готово
     if (tg.initDataUnsafe?.user) {
         const user = tg.initDataUnsafe.user;
         const nameElement = document.getElementById('user-name');
@@ -14,7 +15,7 @@ if (tg) {
 let deck = [];
 let playerHand = [];
 let dealerHand = [];
-let gameOver = false;
+let gameOver = true;
 let isDealing = false;
 
 let balance = 1000;
@@ -24,13 +25,15 @@ const suits = ['♠', '♥', '♦', '♣'];
 const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'В', 'Д', 'К', 'Т'];
 
 function selectBet(amount) {
-    if (isDealing || (!gameOver && playerHand.length > 0)) return; // Нельзя менять ставку во время игры
+    if (isDealing || !gameOver) return; // Ставку можно менять только между раундами
     
     currentBet = amount;
-    document.getElementById('current-bet').textContent = currentBet;
+    const betEl = document.getElementById('current-bet');
+    if (betEl) betEl.textContent = currentBet;
 
     document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
-    document.querySelector(`.chip-${amount}`).classList.add('active');
+    const activeChip = document.querySelector(`.chip-${amount}`);
+    if (activeChip) activeChip.classList.add('active');
 }
 
 function createDeck() {
@@ -105,18 +108,18 @@ async function startGame() {
     if (isDealing) return;
 
     if (balance < currentBet) {
-        document.getElementById('status-message').textContent = 'Недостаточно фишек для этой ставки!';
+        document.getElementById('status-message').textContent = 'Недостаточно фишек! Выберите меньшую ставку.';
         return;
     }
 
     // Списываем ставку
     balance -= currentBet;
     isDealing = true;
+    gameOver = false;
 
     createDeck();
     playerHand = [];
     dealerHand = [];
-    gameOver = false;
 
     document.getElementById('status-message').textContent = 'Раздача карт...';
     document.getElementById('btn-hit').disabled = true;
@@ -142,7 +145,6 @@ async function startGame() {
     await sleep(250);
 
     isDealing = false;
-    document.getElementById('status-message').textContent = 'Ваш ход!';
 
     const pScore = calculateScore(playerHand);
     if (pScore === 21 && playerHand.length === 2) {
@@ -150,6 +152,7 @@ async function startGame() {
     } else if (pScore > 21) {
         endGame('Перебор! Вы проиграли.', 0);
     } else {
+        document.getElementById('status-message').textContent = 'Ваш ход!';
         document.getElementById('btn-hit').disabled = false;
         document.getElementById('btn-stand').disabled = false;
     }
@@ -216,3 +219,4 @@ function endGame(message, multiplier) {
             document.getElementById('status-message').textContent = 'Фишки закончились! Вам начислено 500 🪙';
         }, 1500);
     }
+}
