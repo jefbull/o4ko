@@ -5,40 +5,62 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background: radial-gradient(circle, #1e4d2b 0%, #0d2818 100%);
+    background: #091a10;
     color: #ffffff;
     margin: 0;
-    padding: 12px;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
 }
 
+/* Ободок стола из дерева (как на фото) */
+.casino-table-border {
+    width: 100%;
+    max-width: 440px;
+    min-height: 100vh;
+    background: radial-gradient(circle, #1a4d2e 0%, #0d2e1a 100%);
+    border: 12px solid #3d2314;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+}
+
 #game-container {
     width: 100%;
-    max-width: 420px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 2px solid #2d6a4f;
-    border-radius: 20px;
-    padding: 14px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    text-align: center;
-    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .user-profile {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
-    padding: 0 4px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 6px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .user-name {
     font-weight: bold;
-    font-size: 15px;
+    font-size: 13px;
     color: #ffffff;
+}
+
+.online-badge {
+    font-size: 10px;
+    color: #a3ffb1;
 }
 
 .top-right-panel {
@@ -51,81 +73,97 @@ body {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     padding: 0;
-    font-size: 14px;
+    font-size: 12px;
     cursor: pointer;
-    box-shadow: none;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .balance-badge {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     border: 1px solid #fca311;
     color: #fca311;
-    padding: 4px 10px;
-    border-radius: 20px;
+    padding: 3px 10px;
+    border-radius: 15px;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
 }
 
-h1 {
-    font-size: 20px;
-    margin: 0 0 8px 0;
-    color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-.deck-container {
-    position: relative;
-    width: 48px;
-    height: 66px;
-    margin: 0 auto 8px auto;
-}
-
-.deck-card {
-    position: absolute;
-    width: 46px;
-    height: 64px;
-    border-radius: 6px;
-    background: repeating-linear-gradient(
-        45deg,
-        #b71c1c,
-        #b71c1c 4px,
-        #d32f2f 4px,
-        #d32f2f 8px
-    );
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-}
-
-.deck-3 { top: 4px; left: 4px; }
-.deck-2 { top: 2px; left: 2px; }
-.deck-1 { 
-    top: 0; 
-    left: 0; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    color: rgba(255, 255, 255, 0.4); 
-    font-size: 22px; 
-}
-
-.hand {
-    background: rgba(255, 255, 255, 0.07);
+/* Контейнер фишек сверху */
+.chips-container {
+    background: rgba(0, 0, 0, 0.35);
     border-radius: 12px;
-    padding: 6px;
-    margin-bottom: 8px;
+    padding: 6px 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.hand h2 {
-    font-size: 14px;
-    margin: 0 0 4px 0;
-    color: #e0e0e0;
+.chips-title {
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #cccccc;
+    text-align: center;
+}
+
+.chips-title span { font-weight: bold; color: #fca311; }
+
+.chips-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.chip {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px dashed #ffffff;
+    font-weight: bold;
+    font-size: 10px;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s;
+    padding: 0;
+}
+
+.chip:active { transform: scale(0.9); }
+.chip.active {
+    transform: scale(1.15);
+    border-style: solid;
+    border-color: #ffd700;
+    box-shadow: 0 0 10px #ffd700;
+}
+
+/* Цвета фишек */
+.chip-50    { background: #2b9348; }
+.chip-100   { background: #d62828; }
+.chip-250   { background: #6a040f; }
+.chip-500   { background: #e0a96d; color: #111; }
+.chip-1000  { background: #7209b7; }
+.chip-2500  { background: #3a0ca3; }
+.chip-5000  { background: #f72585; }
+.chip-10000 { background: #4895ef; }
+.chip-25000 { background: #111111; border-color: #ffd700; color: #ffd700; }
+
+/* Игровые зоны рук */
+.hand {
+    position: relative;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 8px;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .cards-row {
@@ -133,19 +171,75 @@ h1 {
     justify-content: center;
     flex-wrap: wrap;
     gap: 6px;
-    min-height: 72px;
     align-items: center;
 }
 
+.score-pill {
+    margin-top: 4px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1px 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #e0e0e0;
+}
+
+/* Деревянный бокс для колоды посредине */
+.deck-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2px 0;
+}
+
+.deck-container {
+    position: relative;
+    width: 44px;
+    height: 60px;
+    background: #4a2c16;
+    padding: 3px;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+    border: 1px solid #2b180a;
+}
+
+.deck-card {
+    position: absolute;
+    width: 38px;
+    height: 54px;
+    border-radius: 4px;
+    background: repeating-linear-gradient(
+        45deg,
+        #b71c1c,
+        #b71c1c 3px,
+        #d32f2f 3px,
+        #d32f2f 6px
+    );
+    border: 1px solid #ffffff;
+}
+
+.deck-3 { top: 5px; left: 5px; }
+.deck-2 { top: 3px; left: 3px; }
+.deck-1 { 
+    top: 3px; 
+    left: 3px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: rgba(255, 255, 255, 0.5); 
+    font-size: 18px; 
+}
+
+/* Карты на поле */
 .card {
     position: relative;
     background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
     color: #111111;
-    width: 48px;
-    height: 70px;
-    border-radius: 6px;
+    width: 44px;
+    height: 64px;
+    border-radius: 5px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    padding: 3px;
+    padding: 2px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -179,101 +273,45 @@ h1 {
     transform: rotate(180deg); 
 }
 
-.card-value { font-size: 11px; font-weight: bold; }
-.card-suit-small { font-size: 9px; }
-.card-center-suit { font-size: 17px; text-align: center; line-height: 1; }
-
-.chips-container {
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 12px;
-    padding: 8px;
-    margin-bottom: 8px;
-}
-
-.chips-title {
-    font-size: 13px;
-    margin-bottom: 6px;
-    color: #d0d0d0;
-}
-
-.chips-title span { font-weight: bold; color: #fca311; }
-
-.chips-grid {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.chip {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 2px dashed #ffffff;
-    font-weight: bold;
-    font-size: 11px;
-    color: #ffffff;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.15s, border-color 0.15s;
-    padding: 0;
-}
-
-.chip:active { transform: scale(0.9); }
-.chip.active {
-    transform: scale(1.15);
-    border-style: solid;
-    border-color: #ffd700;
-    box-shadow: 0 0 12px #ffd700;
-}
-
-/* Цвета фишек */
-.chip-50    { background: #2b9348; }
-.chip-100   { background: #d62828; }
-.chip-250   { background: #6a040f; }
-.chip-500   { background: #e0a96d; color: #111; }
-.chip-1000  { background: #7209b7; }
-.chip-2500  { background: #3a0ca3; }
-.chip-5000  { background: #f72585; }
-.chip-10000 { background: #4895ef; }
-.chip-25000 { background: #111111; border-color: #ffd700; color: #ffd700; }
+.card-value { font-size: 10px; font-weight: bold; }
+.card-suit-small { font-size: 8px; }
+.card-center-suit { font-size: 15px; text-align: center; line-height: 1; }
 
 #status-message {
     font-weight: bold;
-    margin: 8px 0;
-    font-size: 14px;
-    min-height: 20px;
+    text-align: center;
+    font-size: 13px;
     color: #fca311;
+    min-height: 18px;
 }
 
+/* Кнопки действий снизу в стиле референса */
 .controls {
     display: flex;
     gap: 6px;
+    margin-bottom: 4px;
 }
 
-button {
+.btn-action {
     flex: 1;
-    padding: 12px 4px;
-    font-size: 13px;
+    padding: 12px 2px;
+    font-size: 12px;
     border: none;
-    border-radius: 10px;
-    background: #2b9348;
+    border-radius: 8px;
+    background: #333333;
     color: #ffffff;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    border-top: 1px solid rgba(255,255,255,0.2);
 }
 
-button:active { transform: scale(0.97); }
-button:disabled {
-    background: #555555;
-    opacity: 0.5;
+.btn-action:active { transform: scale(0.97); }
+.btn-action:disabled {
+    background: #222222;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
-#btn-start { background: #0077b6; }
-#btn-double { background: #e0a96d; color: #111; }
+.btn-blue { background: linear-gradient(to bottom, #1d6fa5, #0d4a73); }
+.btn-gold { background: linear-gradient(to bottom, #b8860b, #8b6508); color: #fff; }
